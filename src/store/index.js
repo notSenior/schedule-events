@@ -34,7 +34,10 @@ export default new Vuex.Store({
       state.eventItem.push(data)
     },
     errorSet (state, data) {
-      state.eventItem = data
+      state.error = true
+      console.log(data)
+      window.M.toast({ html: 'Oops, something went wrong' })
+      state.error = false
     },
     eventItemDelete (state, id) {
       state.eventItem = state.eventItem.filter(el => el._id !== id)

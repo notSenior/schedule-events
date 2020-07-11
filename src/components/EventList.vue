@@ -18,7 +18,15 @@
             </ul>
         </div>
         <div class="card z-depth-0 offset-s1 col s3">
-            <div>
+            <div class="card-content">
+              <h6>Time range</h6>
+              <div id="slider1"></div>
+              <div class="input-field">
+                <input id="period" type="number" data-length="10" v-model="period" min="5" max="60">
+                <label for="period">Period</label>
+              </div>
+            </div>
+            <div class="card-content">
                 <button v-for="timeBtn in timeBtnArray"
                   @click="sendChanges"
                   @mouseenter="hoverBtn"
@@ -35,12 +43,20 @@
 
 <script>
 import AddNewEvent from './AddNewEvent.vue'
+import noUiSlider from '../../node_modules/materialize-css/extras/noUiSlider/nouislider.js'
+import wNumb from 'wnumb'
 
 export default {
   data () {
     return {
       timeBtnArray: [],
-      checked: []
+      checked: [],
+      slider: null,
+      period: 15,
+      rangeTime: {
+        hourStart: 10,
+        hourEnd: 14
+      }
     }
   },
   computed: {
@@ -57,7 +73,14 @@ export default {
       this.$store.dispatch('eventItemsUpdate', { ids, time: { hour: el.hour, minutes: el.minutes } })
     },
     itemDelete (e) {
-      this.$store.dispatch('eventItemDelete', e.toElement.parentElement.id)
+      const id = e.toElement.parentElement.id
+      this.checked.forEach((val, indx) => {
+        if (id === val.replace('checkbox_', '')) {
+          this.$delete(this.checked, indx)
+        }
+      })
+
+      this.$store.dispatch('eventItemDelete', id)
     },
     hoverBtn (e) {
       if (e.type === 'mouseenter') {
@@ -116,12 +139,14 @@ export default {
       return num === 0 ? '00' : num
     },
     timing (timeStart, timeEnd, period) {
+      this.timeBtnArray = []
+
       timeStart = timeStart.hour * 60 + timeStart.minutes
       timeEnd = timeEnd.hour * 60 + timeEnd.minutes
       var currentTime = timeStart
       while (currentTime <= timeEnd) {
         this.timeBtnArray.push({
-          id: String(currentTime),
+          id: String(currentTime * Math.random()),
           hour: Math.trunc(currentTime / 60),
           minutes: currentTime % 60
         })
@@ -134,12 +159,44 @@ export default {
   },
   mounted () {
     this.$store.dispatch('getAllEventItem')
-    this.timing({ hour: 10, minutes: 0 }, { hour: 13, minutes: 30 }, 15)
+
+    this.slider = document.getElementById('slider1')
+    noUiSlider.create(this.slider, {
+      start: [this.rangeTime.hourStart, this.rangeTime.hourEnd],
+      connect: true,
+      step: 1,
+      orientation: 'horizontal',
+      range: {
+        min: 0,
+        max: 24
+      },
+      format: wNumb({
+        decimals: 0
+      })
+    })
+
+    this.slider.noUiSlider.on('change', (values) => {
+      this.rangeTime = {
+        hourStart: Number(values[0]),
+        hourEnd: Number(values[1])
+      }
+      this.timing({ hour: this.rangeTime.hourStart, minutes: 0 }, { hour: this.rangeTime.hourEnd, minutes: 0 }, Number(this.period))
+    })
+
+    this.timing({ hour: this.rangeTime.hourStart, minutes: 0 }, { hour: this.rangeTime.hourEnd, minutes: 0 }, Number(this.period))
+  },
+  watch: {
+    period () {
+      if (this.period >= 5 && this.period <= 60) {
+        this.timing({ hour: this.rangeTime.hourStart, minutes: 0 }, { hour: this.rangeTime.hourEnd, minutes: 0 }, Number(this.period))
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
+    @import '../../node_modules/materialize-css/extras/noUiSlider/nouislider.css';
     .badge{
       color: black;
     }
@@ -159,5 +216,12 @@ export default {
     .delete{
       cursor: pointer;
       user-select: none;
+    }
+    #slider1{
+      margin: 40px 0;
+    }
+    .card-content{
+      padding-bottom: 0;
+      padding-top: 0;
     }
 </style>

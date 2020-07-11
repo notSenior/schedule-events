@@ -8,8 +8,7 @@
                 <span class="helper-text" data-error="required"></span>
             </div>
             <div class="input-field">
-                <input id="timepicker1" placeholder="Time" type="text" class="timepicker validate" pattern="[0-9]{2}:[0-9]{2}">
-                <span class="helper-text" data-error="wrong time"></span>
+                <input id="timepicker1" placeholder="Time" type="text" class="timepicker" pattern="[0-9]{2}:[0-9]{2}" readonly>
             </div>
         </form>
         <div class="modal-footer">
@@ -31,7 +30,7 @@ export default {
   },
   methods: {
     addEventItem () {
-      if (this.name && (this.time.hour && this.time.minutes)) {
+      if (this.name) {
         this.$store.dispatch('addEventItem', {
           name: this.name,
           time: this.time
@@ -39,7 +38,6 @@ export default {
         this.modal.close()
       } else {
         document.getElementById('event_name').classList.add('invalid')
-        document.getElementById('timepicker1').classList.add('invalid')
       }
     },
     cancel () {
@@ -47,7 +45,7 @@ export default {
       this.time = { hour: null, minutes: null }
     }
   },
-  created () {
+  mounted () {
     document.addEventListener('DOMContentLoaded', () => {
       var elem = document.getElementById('modal1')
       this.modal = window.M.Modal.init(elem)
@@ -57,9 +55,9 @@ export default {
       this.timepicker = window.M.Timepicker.init(elem, {
         container: '#app',
         twelveHour: false,
-        onSelect: (h, m) => {
-          this.time.hour = h
-          this.time.minutes = m
+        onCloseEnd: () => {
+          this.time.hour = this.timepicker.hours
+          this.time.minutes = this.timepicker.minutes
         }
       })
     })
@@ -70,3 +68,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .timepicker{
+    color: black !important;
+  }
+</style>
