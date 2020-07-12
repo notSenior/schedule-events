@@ -5,6 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "npx webpack",
+    "create-db": "createDb.js",
+    "start": "server.js",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

@@ -4,7 +4,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 module.exports = {
   entry: './src/main.js',
   devtool: 'eval',
-  watch: true,
+  watch: false,
   mode: 'development',
   output: {
     filename: 'main.js',

@@ -3,22 +3,16 @@
 ## Project setup
 ```
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+## Mongodb is required for work
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+>[Install mongodb](https://www.mongodb.com/) 
+
+
+### Start project
+```
+npm run create-db
+npm run start
+```
