@@ -34,8 +34,10 @@ export default {
         this.$store.dispatch('addEventItem', {
           name: this.name,
           time: this.time
+        }).then(() => {
+          this.modal.close()
+          this.name = ''
         })
-        this.modal.close()
       } else {
         document.getElementById('event_name').classList.add('invalid')
       }

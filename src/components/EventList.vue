@@ -11,7 +11,7 @@
                           <span></span>
                         </label>
                     </div>
-                    <span class="badge left col s1">{{`${event.time.hour}:${minutesFormat(event.time.minutes)}`}}</span>
+                    <span class="badge left col s1"> {{timeFormat(event.time)}}</span>
                     <span class="col s9">{{event.name}}</span>
                     <i @click="itemDelete" class="col s1 material-icons right delete">clear</i>
                 </li>
@@ -34,7 +34,7 @@
                   :key="timeBtn.id"
                   :id="timeBtn.id"
                   class="btn item">
-                  {{`${timeBtn.hour}:${minutesFormat(timeBtn.minutes)}`}}
+                  {{timeFormat(timeBtn)}}
                 </button>
             </div>
         </div>
@@ -71,6 +71,12 @@ export default {
       var ids = this.checked.map(id => id.replace('checkbox_', ''))
 
       this.$store.dispatch('eventItemsUpdate', { ids, time: { hour: el.hour, minutes: el.minutes } })
+        .then(() => {
+          for (const btn of this.timeBtnArray) {
+            document.getElementById(btn.id).classList.remove('highlight')
+          }
+          this.disabledCheckbox()
+        })
     },
     itemDelete (e) {
       const id = e.toElement.parentElement.id
@@ -81,6 +87,12 @@ export default {
       })
 
       this.$store.dispatch('eventItemDelete', id)
+        .then(() => {
+          for (const btn of this.timeBtnArray) {
+            document.getElementById(btn.id).classList.remove('highlight')
+          }
+          this.disabledCheckbox()
+        })
     },
     hoverBtn (e) {
       if (e.type === 'mouseenter') {
@@ -135,8 +147,17 @@ export default {
         }
       }
     },
-    minutesFormat (num) {
-      return num === 0 ? '00' : num
+    timeFormat (time) {
+      let minutes = time.minutes
+      let hour = time.hour
+
+      if (minutes < 10) {
+        minutes = '0' + minutes
+      }
+      if (hour < 10) {
+        hour = '0' + hour
+      }
+      return `${hour}:${(minutes)}`
     },
     timing (timeStart, timeEnd, period) {
       this.timeBtnArray = []
@@ -152,6 +173,7 @@ export default {
         })
         currentTime += period
       }
+      setTimeout(this.disabledCheckbox, 0)
     }
   },
   components: {

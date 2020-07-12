@@ -35,7 +35,7 @@ export default new Vuex.Store({
     },
     errorSet (state, data) {
       state.error = true
-      console.log(data)
+      console.error(data)
       window.M.toast({ html: 'Oops, something went wrong' })
       state.error = false
     },
@@ -50,19 +50,19 @@ export default new Vuex.Store({
         commit('sortEventItem')
       }).catch(err => commit('errorSet', err))
     },
-    addEventItem ({ commit }, eventItem) {
-      axios.post('/eventItem/add', eventItem).then(result => {
+    async addEventItem ({ commit }, eventItem) {
+      await axios.post('/eventItem/add', eventItem).then(result => {
         commit('addEventItem', result.data)
         commit('sortEventItem')
       }).catch(err => commit('errorSet', err))
     },
-    eventItemDelete ({ commit }, id) {
-      axios.post('/eventItem/delete', { id }).then(() => {
+    async eventItemDelete ({ commit }, id) {
+      await axios.post('/eventItem/delete', { id }).then(() => {
         commit('eventItemDelete', id)
       }).catch(err => commit('errorSet', err))
     },
-    eventItemsUpdate ({ commit }, { ids, time }) {
-      axios.post('/eventItem/update', { ids, time }).then(result => {
+    async eventItemsUpdate ({ commit }, { ids, time }) {
+      await axios.post('/eventItem/update', { ids, time }).then(result => {
         commit('updateEventItems', result.data)
         commit('sortEventItem')
       }).catch(err => commit('errorSet', err))
