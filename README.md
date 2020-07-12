@@ -13,6 +13,6 @@ npm run build
 
 ### Start project
 ```
-npm run create-db
+npm run createDb
 npm run start
 ```
